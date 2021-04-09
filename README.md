@@ -43,13 +43,13 @@ All the parameters of training are provided in the coco_config.yaml in the confi
 
   
 
-python3 train_superglue.py --config_path configs/coco_config.yaml
+    python3 train_superglue.py --config_path configs/coco_config.yaml
 
 Incase of Multi-GPU training, distributed setting is used. So run the following command,
 
   
 
-python3 -m torch.distributed.launch --nproc_per_node="NUM_GPUS" train_superglue.py --config_path configs/coco_config.yaml
+    python3 -m torch.distributed.launch --nproc_per_node="NUM_GPUS" train_superglue.py --config_path configs/coco_config.yaml
 
 Only singe-node training is supported as of now.
 
@@ -61,11 +61,11 @@ Checkpoints are saved at the end of every epoch, and best checkpoint is determin
 
 ##  Evaluation
 
-The official implementation has evaluation code for testing on small set of scannet scene pairs. Since our model in trained with random homographies, evaluating on scenes with random 3D camera movements doesn't perform well as pretrained indoor model. Instead we evaluate on test images of COCO, indoor and outdoor dataset(https://dimlrgbd.github.io/) with random homographies. Images are selected from the datasets and random homographies are generated for each of them. Based on matches given by the model, we determine the homography matrix using DLT and RANSAC implementation. As mentioned in paper, we report the AUC at 5, 10, 25 thresholds(for corner points), precision and recall. For evaluation run the following command,
+The official implementation has evaluation code for testing on small set of scannet scene pairs. Since our model in trained with random homographies, evaluating on scenes with random 3D camera movements doesn't perform well as pretrained indoor model. Instead we evaluate on test images of COCO, indoor and outdoor dataset(https://dimlrgbd.github.io/) with random homographies. Images are selected from the datasetsgit push -u origin main and random homographies are generated for each of them. Based on matches given by the model, we determine the homography matrix using DLT and RANSAC implementation. As mentioned in paper, we report the AUC at 5, 10, 25 thresholds(for corner points), precision and recall. For evaluation run the following command,
 
   
 
-python3 match_homography.py --eval --superglue coco_homo
+    python3 match_homography.py --eval --superglue coco_homo
 
 Parameter --superglue determines the checkpoint used and should be one of the following,
 
