@@ -1,0 +1,60 @@
+train_params:
+  output_dir: output/train
+  experiment_name: default
+  experiment_tag: default #name for experiment in wandb logging
+  start_epoch: 0 #use -1 to resume the epoch number from restore_path ckpt given
+  batch_size: 2
+  num_epochs: 90
+  sync_bn: false #whether to sync batch norm layer in distributed training setting
+  restore_opt: true #whether to restore the optimizer states while resuming the training from given ckpt
+  num_workers: 0 #number of dataloader workers
+  log_interval: 50 
+  debug: true #if true plots the matched keypoints for one image in every batch during training
+  debug_path: "debug" #folder where debug plots should be stored
+  debug_iters: 10 #number of iters in each epoch for which debug plot should be made
+  val_images_count: 10 #should be <= 1500. Number of images to use for computing validation score
+  use_wandb: false #whether to use wandb to log checkpoints to cloud(Useful if training in colab)
+  use_ema: false #whether to maintain moving average of superglue model weights that will be used in testing and inference
+  init_seed: 10
+
+superglue_params:
+  sinkhorn_iterations: 100
+  match_threshold: 0.2
+  num_layers: 9
+  restore_path: #path to the ckpt from which training should be resumed
+  use_layernorm: false #whether to use layernorm instead of batchnorm in the MLP layer
+  bin_value: 1.0 #initial value for dustbin in assignment
+  pos_loss_weight: 0.45 #weightage for positive(matched points) components of loss
+  neg_loss_weight: 1.0 #weightage for negative(non-matched points) component of loss
+
+superpoint_params:
+  nms_radius: 4
+  max_keypoints: 512
+  keypoint_threshold: 0.0
+  remove_borders: 4
+
+optimizer_params:
+  opt_type: adam # give either 'adam' or 'sgd'
+  lr: 0.0001 #initial learning rate
+  weight_decay: 0.0005 #weight decay to use for weights. Bias components are excluded
+  warmup_epochs: 1 #Number of epoch for warming up the learning rate
+  step_epoch: 25 #Epoch number after which learning rate will be exponentially decayed according to step_value below
+  step_value: 0.9440608762859234 #Determines the decay rate of learning rate after step_epoch. Curr value is for 40 epochs after which init lr will be divided by 10
+
+dataset_params:
+  dataset_path: #Path to COCO dataset that contains the 'train2017', 'val2017' and 'annotations' folder
+  apply_color_aug: true #whether to apply photometric distortions
+  image_height: 480 
+  image_width: 640
+  resize_aspect: false #whether to resize the input image with aspect ratio maintained
+  augmentation_params:
+    patch_ratio: 0.85 
+    #All the below params are ranges for distortion. (0, Mentioned_value). 
+    #Refer 'get_perspective_mat' function in utils/preprocess_utils.py for more info
+    perspective_x: 0.0008 # range for perspective-x component
+    perspective_y: 0.0008 #range of perspective-y component
+    shear_ratio: 0.04 #shear ratio range
+    shear_angle: 10 #shear direction range
+    rotation_angle: 25 #rotation angle range
+    scale: 0.6 #uniform scaling range
+    translation: 0.6 #translation component range

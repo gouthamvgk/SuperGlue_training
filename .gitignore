@@ -1,0 +1,17 @@
+*.pyc
+*.DS_Store
+*.swp
+
+output/
+.vscode/
+images/
+debug/
+wandb/
+dump_homo_pairs/
+dump_match_pairs/
+*.pt
+*.pth
+assets/coco_test_images/
+assets/indoor_test_images/
+assets/outdoor_test_images/
+assets/sample_dataset
