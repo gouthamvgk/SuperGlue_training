@@ -247,8 +247,10 @@ class SuperGlue(nn.Module):
             print('Loaded SuperGlue model (\"{}\" weights)'.format(
             self.config['weights_path']))
 
-    def forward(self, data):
+    def forward(self, data, **kwargs):
         """Run SuperGlue on a pair of keypoints and descriptors"""
+        if kwargs.get('mode', 'test') == "train":
+            return self.forward_train(data)
         desc0, desc1 = data['descriptors0'], data['descriptors1']
         kpts0, kpts1 = data['keypoints0'], data['keypoints1']
         if kpts0.shape[1] == 0 or kpts1.shape[1] == 0:  # no keypoints

@@ -54,6 +54,8 @@ def train(config, rank):
         print("Restored model weights..")
         if config['train_params']['start_epoch'] < 0:
             start_epoch = restore_dict['epoch'] + 1
+    if is_distributed and config['train_params']['sync_bn']:
+        superglue_model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(superglue_model).to(device)
     pg0, pg1, pg2 = [], [], []
     for k, v in superglue_model.named_modules():
         if hasattr(v, 'bias') and isinstance(v.bias, nn.Parameter):
@@ -84,8 +86,6 @@ def train(config, rank):
             if ('ema' in restore_dict) and (restore_dict['ema'] is not None):
                 ema.ema.load_state_dict(restore_dict['ema'])
                 ema.updates = restore_dict['ema_updates']
-    if is_distributed and config['train_params']['sync_bn']:
-        superglue_model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(superglue_model).to(device)
     if is_distributed:
         superglue_model = DDP(superglue_model, device_ids=[rank], output_device=rank)
     train_dataset = COCO_loader(config['dataset_params'], typ="train")
@@ -162,7 +162,7 @@ def train(config, rank):
                 'matches': match_indexes,
                 'gt_vec': gt_vector
             }
-            total_loss, pos_loss, neg_loss = superglue_model.forward_train(superglue_input)
+            total_loss, pos_loss, neg_loss = superglue_model(superglue_input, **{'mode': 'train'})
             total_loss.backward()
             optimizer.step()
             optimizer.zero_grad()
