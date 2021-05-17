@@ -62,7 +62,7 @@ def train(config, rank):
             pg2.append(v.bias)  # biases
         if hasattr(v, 'bin_score'):
             pg0.append(v.bin_score)
-        if isinstance(v, nn.BatchNorm2d) or isinstance(v, nn.BatchNorm1d):
+        if isinstance(v, nn.BatchNorm2d) or isinstance(v, nn.BatchNorm1d) or isinstance(v, nn.SyncBatchNorm):
             pg0.append(v.weight)  # no decay
         elif hasattr(v, 'weight') and isinstance(v.weight, nn.Parameter):
             pg1.append(v.weight)  # apply decay
